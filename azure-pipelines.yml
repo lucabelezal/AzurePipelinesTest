@@ -9,24 +9,23 @@ trigger:
 - releases/*
 - features/*
 
-pool:
-  vmImage: 'macOS-10.13'
-
 jobs:
-- job: Build
+- job: iOS
+  pool:
+    vmImage: 'macOS-10.13'
   steps:
-  - script: xcodebuild clean build -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
-
-- job: Test
-  condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
-  dependsOn: Build
-  steps:
-  - script: xcodebuild test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
-
-- job: Coverage
-  steps:
+  - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
-    
+
+# - job: Test
+#   condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
+#   dependsOn: Build
+#   steps:
+#   - script: xcodebuild test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
+
+# - job: Coverage
+#   steps:
+#   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
 # steps:
 # - task: Xcode@5
 #   inputs:
