@@ -8,12 +8,10 @@ trigger:
 - develop
 - releases/*
 - features/*
-
-pr:
-- master
-- develop
-- features/*
-
+# pr:
+# - master
+# - develop
+# - features/*
 pool:
   vmImage: 'macOS-10.13'
 
@@ -28,4 +26,4 @@ steps:
     xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
 
 steps:
-  - script: echo Hello world
+  - script: bash <(curl -s https://codecov.io/bash)
