@@ -14,9 +14,8 @@ jobs:
   pool:
     vmImage: 'macOS-10.13'
   steps:
-  - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
+  - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone SE,OS=12"
   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
-
 # - job: Test
 #   condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
 #   dependsOn: Build
