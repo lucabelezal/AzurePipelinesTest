@@ -22,6 +22,4 @@ steps:
     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
     xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
     
-- task: Coverage@0
-  displayName: Coverage
 - script: bash <(curl -s https://codecov.io/bash)
