@@ -12,14 +12,29 @@ trigger:
 pool:
   vmImage: 'macOS-10.13'
 
-steps:
-- task: Xcode@5
-  inputs:
-    actions: 'build'
-    scheme: ''
-    sdk: 'iphoneos'
-    configuration: 'Release'
-    xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-    xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
+jobs:
+- job: Build
+  steps:
+  - script: xcodebuild clean build -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
+
+- job: Test
+  condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
+  dependsOn: Build
+  steps:
+  - script: xcodebuild test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
+
+- job: Coverage
+  steps:
+  - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
     
-- script: bash <(curl -s https://codecov.io/bash)
+# steps:
+# - task: Xcode@5
+#   inputs:
+#     actions: 'build'
+#     scheme: ''
+#     sdk: 'iphoneos'
+#     configuration: 'Release'
+#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+#     xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
+    
+# - script: bash <(curl -s https://codecov.io/bash) -t f1b873d7-af79-480a-afbc-5310cf4ba484
