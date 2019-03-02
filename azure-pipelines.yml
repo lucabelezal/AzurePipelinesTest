@@ -5,6 +5,14 @@
 
 trigger:
 - master
+- develop
+- releases/*
+- features/*
+
+pr:
+- master
+- develop
+- features/*
 
 pool:
   vmImage: 'macOS-10.13'
@@ -18,3 +26,6 @@ steps:
     configuration: 'Release'
     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
     xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
+
+steps:
+  - script: echo Hello world
