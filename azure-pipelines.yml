@@ -3,19 +3,54 @@
 # Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
+
 trigger:
 - master
 - develop
 - releases/*
 - features/*
 
-jobs:
-- job: iOS
-  pool:
-    vmImage: 'macOS-10.13'
-  steps:
-  - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone SE,OS=12"
-  - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- task: Xcode@5
+  inputs:
+    actions: 'clean build test'
+    scheme: ''
+    sdk: 'iphoneos'
+    configuration: 'Release'
+    xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+    xcodeVersion: '10'
+    useXcpretty: 'true'
+
+# trigger:
+# - master
+# - develop
+# - releases/*
+# - features/*
+
+# pool:
+#   vmImage: 'macOS-10.13'
+
+# - task: Xcode@5
+#   inputs:
+#     actions: 'clean build test'
+#     scheme: ''
+#     sdk: 'iphoneos'
+#     configuration: 'Release'
+#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+#     xcodeVersion: 'default' # Options: 8, 9, 10, default, specifyPath
+#     signingOption: 'default' # Options: nosign, default, manual, auto
+#     useXcpretty: 'true'
+
+# jobs:
+# - job: iOS
+#   pool:
+#     vmImage: 'macOS-10.13'
+#   steps:
+#   - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone SE,OS=12"
+#   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
 # - job: Test
 #   condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
 #   dependsOn: Build
