@@ -20,9 +20,6 @@ variables:
 steps:
 # - script: /usr/local/bin/carthage update --platform ios
 #   displayName: 'Carthage installation'
-- script: gem install rails && rails -v
-  displayName: 'gem install rails'
-
 - script: |
     CALL gem install bundler
     bundle install --retry=3 --jobs=4
