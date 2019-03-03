@@ -92,5 +92,4 @@ jobs:
     - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
     - task:
       displayName: 'Upload coverage to codecov.io'
-    - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Report/slather/xml_report -F adder -F subtractor
-    
+    - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN)
