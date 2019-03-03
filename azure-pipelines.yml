@@ -25,6 +25,12 @@ steps:
     bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
 
+- script: bundle
+  displayName: 'Execute Bundle'
+
+- script: gem install slather
+  displayName: 'Install Slather'  
+
 - task: Xcode@5
   displayName: 'Xcode debug build'
   inputs:
@@ -52,21 +58,17 @@ steps:
     destinationPlatformOption: 'iOS'
     signingOption: "auto"
     useXcpretty: true
-    testResultsFiles: 'build/reports/coverage.xml'
 
-- script: bundle
-  displayName: 'Execute Bundle'
-
-- script: gem install slather
-  displayName: 'Install Slather'
-
-- script: slather
-  displayName: 'Run Slather'
+# - script: slather
+#   displayName: 'Run Slather'
 
 - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
   displayName: 'Run Slather scheme TwitchApp'
 
-- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+- script: bash <(curl -s https://codecov.io/bash) -X xcodeplist -cF ios
+  displayName: 'Upload coverage to codecov.io 01'  
+
+- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Coverage/coverage.xml -F adder -F subtractor
   displayName: 'Upload coverage to codecov.io'     
 
 # - bash: bundle install
