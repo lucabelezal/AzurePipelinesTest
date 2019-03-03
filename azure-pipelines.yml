@@ -48,19 +48,19 @@ steps:
     useXcpretty: true
 
 - task: Xcode@5
-  displayName: 'Running XCTest' #/XCUITest
+  displayName: 'Running XCTest/XCUITest'
   inputs:
     actions: 'test'
     scheme: '$(scheme)'
     sdk: 'iphonesimulator'
-    # configuration: '$(configuration)'
+    configuration: '$(configuration)'
     xcodeVersion: '10'
-    # packageApp: false
+    packageApp: false
     xcWorkspacePath: 'TwitchApp.xcodeproj'
     destinationSimulators: 'iPhone 7'
-    # destinationTypeOption: 'simulators'
-    # destinationPlatformOption: 'iOS'
-    # signingOption: "auto"
+    destinationTypeOption: 'simulators'
+    destinationPlatformOption: 'iOS'
+    signingOption: "auto"
     useXcpretty: true
 
 - script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' -enableCodeCoverage YES clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -r "html" -o "Report/tests.html"
