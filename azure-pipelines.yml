@@ -3,8 +3,12 @@
 # Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
+
 trigger:
 - master
+- develop
+- releases/*
+- features/*
 
 pool:
   vmImage: 'macOS-10.13'
@@ -12,9 +16,77 @@ pool:
 steps:
 - task: Xcode@5
   inputs:
-    actions: 'build'
-    scheme: ''
+    actions: 'clean build test'
+    scheme: 'TwitchApp'
     sdk: 'iphoneos'
-    configuration: 'Release'
+    destinationPlatformOption: iOS
+    destinationSimulators: 'iPhone 7'
     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-    xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
+    xcodeVersion: '10'
+    useXcpretty: true
+
+# # All tasks on macOS
+# - job: build_all_darwin
+#   displayName: Build all tasks (macOS)
+#   condition: and(succeeded(), not(variables.task), eq(variables.os, 'Darwin'))
+#   pool:
+#     vmImage: macos-10.13
+#   steps:
+#   - template: ci/build-all-steps.yml
+#     parameters:
+#       os: Darwin
+
+# # Single task
+# - job: buildSingle
+#   displayName: Build single task
+#   condition: and(succeeded(), variables.task)
+#   steps:
+#   - template: ci/build-single-steps.yml    
+
+# trigger:
+# - master
+# - develop
+# - releases/*
+# - features/*
+
+# pool:
+#   vmImage: 'macOS-10.13'
+
+# - task: Xcode@5
+#   inputs:
+#     actions: 'clean build test'
+#     scheme: ''
+#     sdk: 'iphoneos'
+#     configuration: 'Release'
+#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+#     xcodeVersion: 'default' # Options: 8, 9, 10, default, specifyPath
+#     signingOption: 'default' # Options: nosign, default, manual, auto
+#     useXcpretty: 'true'
+
+# jobs:
+# - job: iOS
+#   pool:
+#     vmImage: 'macOS-10.13'
+#   steps:
+#   - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone SE,OS=12"
+#   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
+# - job: Test
+#   condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
+#   dependsOn: Build
+#   steps:
+#   - script: xcodebuild test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
+
+# - job: Coverage
+#   steps:
+#   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
+# steps:
+# - task: Xcode@5
+#   inputs:
+#     actions: 'build'
+#     scheme: ''
+#     sdk: 'iphoneos'
+#     configuration: 'Release'
+#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+#     xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
+    
+# - script: bash <(curl -s https://codecov.io/bash) -t f1b873d7-af79-480a-afbc-5310cf4ba484
