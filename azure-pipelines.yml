@@ -11,7 +11,7 @@ trigger:
 - features/*
 
 pool:
-  vmImage: 'macOS-10.13'
+  vmImage: 'macOS-10.14.3'
 
 steps:
 - task: Xcode@5
@@ -20,7 +20,7 @@ steps:
     scheme: 'TwitchApp'
     sdk: 'iphoneos'
     destinationPlatformOption: iOS
-    destinationSimulators: 'iPhone 7'
+    destinationSimulators: 'iPhone X'
     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
     xcodeVersion: '10'
     useXcpretty: true
