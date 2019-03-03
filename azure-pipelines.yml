@@ -16,13 +16,32 @@ pool:
 steps:
 - task: Xcode@5
   inputs:
-    actions: 'clean build-for-testing  test'
-    scheme: ''
+    actions: 'clean build test'
+    scheme: 'TwitchApp'
     sdk: 'iphoneos'
-    configuration: 'Release'
+    destinationPlatformOption: iOS
+    destinationSimulators: 'iPhone 7'
     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
     xcodeVersion: '10'
-    useXcpretty: 'true'
+    useXcpretty: true
+
+# # All tasks on macOS
+# - job: build_all_darwin
+#   displayName: Build all tasks (macOS)
+#   condition: and(succeeded(), not(variables.task), eq(variables.os, 'Darwin'))
+#   pool:
+#     vmImage: macos-10.13
+#   steps:
+#   - template: ci/build-all-steps.yml
+#     parameters:
+#       os: Darwin
+
+# # Single task
+# - job: buildSingle
+#   displayName: Build single task
+#   condition: and(succeeded(), variables.task)
+#   steps:
+#   - template: ci/build-single-steps.yml    
 
 # trigger:
 # - master
