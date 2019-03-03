@@ -48,21 +48,36 @@ steps:
     signingOption: "auto"
     useXcpretty: true
     testResultsFiles: 'build/reports/coverage.xml'
-
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'   
-
-# Publish Test Results
-# Publish Test Results to Azure Pipelines/TFS
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: build/reports/coverage.xml' 
-
+       
+- script: bash bundle
+- script: bash gem install slather
+- script: slather
+- script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
 - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
   displayName: 'codecov' 
+
+# - task: CmdLine@2
+#   inputs:
+#     script: 'bundle'    
+#     script: 'gem install slather'
+
+# Bash
+# Run a Bash script on macOS
+# - task: Bash@3
+#   inputs:
+#     script: ''
+
+# - task: PublishCodeCoverageResults@1
+#   inputs:
+#     codeCoverageTool: Cobertura
+#     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+#     reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'   
+
+# # Publish Test Results
+# # Publish Test Results to Azure Pipelines/TFS
+# - task: PublishTestResults@2
+#   inputs:
+#     testResultsFiles: build/reports/coverage.xml'   
     
 
 # # Upload coverage to codecov.io
