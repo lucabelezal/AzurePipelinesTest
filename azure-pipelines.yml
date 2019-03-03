@@ -9,6 +9,12 @@ trigger:
 - releases/*
 - features/*
 
+pr:
+- master
+- develop
+- releases/*
+- features/*
+
 pool:
   vmImage: 'macOS 10.13'
 
