@@ -23,7 +23,6 @@ variables:
   sdk: 'iphoneos'
   configuration: 'Debug'
 
-
 jobs:
 - job: Setup
   steps:
