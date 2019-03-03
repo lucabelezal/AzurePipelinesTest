@@ -20,11 +20,6 @@ variables:
 steps:
 # - script: /usr/local/bin/carthage update --platform ios
 #   displayName: 'Carthage installation'
-- task: UseRubyVersion@0
-  inputs:
-    versionSpec: '>= 2.4'
-    addToPath: true
-
 - script: gem install rails && rails -v
   displayName: 'gem install rails'
 
