@@ -47,16 +47,23 @@ steps:
     destinationPlatformOption: 'iOS'
     signingOption: "auto"
     useXcpretty: true
-    publishJUnitResults: 'build/reports/coverage.xml'
-
-- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
-  displayName: 'codecov' 
+    testResultsFiles: 'build/reports/coverage.xml'
 
 - task: PublishCodeCoverageResults@1
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'       
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'   
+
+# Publish Test Results
+# Publish Test Results to Azure Pipelines/TFS
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: build/reports/coverage.xml' 
+
+- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+  displayName: 'codecov' 
+    
 
 # # Upload coverage to codecov.io
 # - script: bash <(curl -s https://codecov.io/bash) -t -t $(CODECOV_TOKEN)
