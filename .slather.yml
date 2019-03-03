@@ -1,0 +1,9 @@
+coverage_service: cobertura_xml
+xcodeproj: TwitchApp.xcodeproj
+scheme: TwitchApp
+source_directory: ./TwitchApp/
+output_directory: Coverage/
+ignore:
+  - TwitchAppTests/*
+  - TwitchAppUITests/* 
+
