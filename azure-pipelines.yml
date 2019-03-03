@@ -3,7 +3,6 @@
 # Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
-
 trigger:
 - master
 - develop
@@ -11,19 +10,94 @@ trigger:
 - features/*
 
 pool:
-  vmImage: 'macOS-10.13'
+  vmImage: 'macOS 10.13'
 
+variables:
+  scheme: 'TwitchApp'
+  sdk: 'iphoneos'
+  configuration: 'Debug'
+  
 steps:
+# - script: /usr/local/bin/carthage update --platform ios
+#   displayName: 'Carthage installation'
 - task: Xcode@5
+  displayName: 'Xcode debug build'
   inputs:
-    actions: 'clean build test'
-    scheme: 'TwitchApp'
-    sdk: 'iphoneos'
-    destinationPlatformOption: iOS
-    destinationSimulators: 'iPhone 7'
-    xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+    actions: 'clean build'
+    scheme: '$(scheme)'
+    sdk: '$(sdk)'
+    configuration: '$(configuration)'
     xcodeVersion: '10'
+    packageApp: false
+    xcWorkspacePath: 'TwitchApp.xcodeproj'
     useXcpretty: true
+
+- task: Xcode@5
+  displayName: 'Running XCTest' #/XCUITest
+  inputs:
+    actions: 'test'
+    scheme: '$(scheme)'
+    sdk: 'iphonesimulator'
+    configuration: '$(configuration)'
+    xcodeVersion: '10'
+    packageApp: false
+    xcWorkspacePath: 'TwitchApp.xcodeproj'
+    destinationSimulators: 'iPhone 7'
+    destinationTypeOption: 'simulators'
+    destinationPlatformOption: 'iOS'
+    signingOption: "auto"
+    useXcpretty: true
+    testResultsFiles: 'build/reports/coverage.xml'
+       
+- script: bash bundle
+- script: bash gem install slather
+- script: slather
+- script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
+- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+  displayName: 'codecov' 
+
+# - task: CmdLine@2
+#   inputs:
+#     script: 'bundle'    
+#     script: 'gem install slather'
+
+# Bash
+# Run a Bash script on macOS
+# - task: Bash@3
+#   inputs:
+#     script: ''
+
+# - task: PublishCodeCoverageResults@1
+#   inputs:
+#     codeCoverageTool: Cobertura
+#     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+#     reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'   
+
+# # Publish Test Results
+# # Publish Test Results to Azure Pipelines/TFS
+# - task: PublishTestResults@2
+#   inputs:
+#     testResultsFiles: build/reports/coverage.xml'   
+    
+
+# # Upload coverage to codecov.io
+# - script: bash <(curl -s https://codecov.io/bash) -t -t $(CODECOV_TOKEN)
+#   displayName: Upload coverage to codecov.io    
+
+# pool:
+#   vmImage: 'macOS-10.13'
+
+# steps:
+# - task: Xcode@5
+#   inputs:
+#     actions: 'clean build test'
+#     scheme: 'TwitchApp'
+#     sdk: 'iphoneos'
+#     destinationPlatformOption: iOS
+#     destinationSimulators: 'iPhone 7'
+#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+#     xcodeVersion: '10'
+#     useXcpretty: true
 
 # # All tasks on macOS
 # - job: build_all_darwin
