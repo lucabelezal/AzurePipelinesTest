@@ -16,22 +16,27 @@ variables:
   scheme: 'TwitchApp'
   sdk: 'iphoneos'
   configuration: 'Debug'
-       
-steps:
-# - script: /usr/local/bin/carthage update --platform ios
-#   displayName: 'Carthage installation'
-- script: |
+
+
+jobs:
+- job: Setup
+  steps:
+  - script: |
     CALL gem install bundler
     bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
 
-- script: bundle
-  displayName: 'Execute Bundle'
+  - script: bundle
+    displayName: 'Execute Bundle'
 
-- script: gem install slather
-  displayName: 'Install Slather'  
+  - script: gem install slather
+    displayName: 'Install Slather'  
 
-- task: Xcode@5
+- job: Clean-Build
+  dependsOn: Setup
+  condition: succeeded('Setup')
+  steps:
+  - task: Xcode@5
   displayName: 'Xcode debug build'
   inputs:
     actions: 'clean build'
@@ -43,8 +48,14 @@ steps:
     xcWorkspacePath: 'TwitchApp.xcodeproj'
     useXcpretty: true
 
-- task: Xcode@5
-  displayName: 'Running XCTest' #/XCUITest
+- job: Test
+  dependsOn:
+  - Setup
+  - Clean-Build
+  condition: succeeded('Clean-Build')
+  steps:
+  - task: Xcode@5
+  displayName: 'Running XCTest/XCUITest'
   inputs:
     actions: 'test'
     scheme: '$(scheme)'
@@ -59,141 +70,15 @@ steps:
     signingOption: "auto"
     useXcpretty: true
 
-- script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
+- job: Coverage
+  dependsOn:
+  - Setup
+  - Clean-Build
+  - Test
+  condition: succeeded('Test')
+  steps:
+  - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
   displayName: 'Run Slather'
 
-- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Report/slather/xml_report -F adder -F subtractor
-  displayName: 'Upload coverage to codecov.io'   
-
-# - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
-#   displayName: 'Run Slather scheme TwitchApp'
-
-# - script: bash <(curl -s https://codecov.io/bash) -X xcodeplist -cF ios
-#   displayName: 'Upload coverage to codecov.io 01'  
-    
-# - bash: bundle install
-#   displayName: 'Install Bundle'
-
-# - script: bundle
-#   displayName: 'Execute Bundle'
-
-# - script: gem install slather
-#   displayName: 'Install Slather'
-
-# - script: slather
-#   displayName: 'Run Slather'
-
-# - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
-#   displayName: 'Run Slather scheme TwitchApp'
-
-# - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
-#   displayName: 'Upload coverage to codecov.io' 
-
-# - task: CmdLine@2
-#   inputs:
-#     script: 'bundle'    
-#     script: 'gem install slather'
-
-# Bash
-# Run a Bash script on macOS
-# - task: Bash@3
-#   inputs:
-#     script: ''
-
-# - task: PublishCodeCoverageResults@1
-#   inputs:
-#     codeCoverageTool: Cobertura
-#     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-#     reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'   
-
-# # Publish Test Results
-# # Publish Test Results to Azure Pipelines/TFS
-# - task: PublishTestResults@2
-#   inputs:
-#     testResultsFiles: build/reports/coverage.xml'   
-    
-
-# # Upload coverage to codecov.io
-# - script: bash <(curl -s https://codecov.io/bash) -t -t $(CODECOV_TOKEN)
-#   displayName: Upload coverage to codecov.io    
-
-# pool:
-#   vmImage: 'macOS-10.13'
-
-# steps:
-# - task: Xcode@5
-#   inputs:
-#     actions: 'clean build test'
-#     scheme: 'TwitchApp'
-#     sdk: 'iphoneos'
-#     destinationPlatformOption: iOS
-#     destinationSimulators: 'iPhone 7'
-#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-#     xcodeVersion: '10'
-#     useXcpretty: true
-
-# # All tasks on macOS
-# - job: build_all_darwin
-#   displayName: Build all tasks (macOS)
-#   condition: and(succeeded(), not(variables.task), eq(variables.os, 'Darwin'))
-#   pool:
-#     vmImage: macos-10.13
-#   steps:
-#   - template: ci/build-all-steps.yml
-#     parameters:
-#       os: Darwin
-
-# # Single task
-# - job: buildSingle
-#   displayName: Build single task
-#   condition: and(succeeded(), variables.task)
-#   steps:
-#   - template: ci/build-single-steps.yml    
-
-# trigger:
-# - master
-# - develop
-# - releases/*
-# - features/*
-
-# pool:
-#   vmImage: 'macOS-10.13'
-
-# - task: Xcode@5
-#   inputs:
-#     actions: 'clean build test'
-#     scheme: ''
-#     sdk: 'iphoneos'
-#     configuration: 'Release'
-#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-#     xcodeVersion: 'default' # Options: 8, 9, 10, default, specifyPath
-#     signingOption: 'default' # Options: nosign, default, manual, auto
-#     useXcpretty: 'true'
-
-# jobs:
-# - job: iOS
-#   pool:
-#     vmImage: 'macOS-10.13'
-#   steps:
-#   - script: xcodebuild clean build test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone SE,OS=12"
-#   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
-# - job: Test
-#   condition: and(succeeded(), ne(dependencies.Build.outputs['printvar.skipsubsequent'], 'true'))
-#   dependsOn: Build
-#   steps:
-#   - script: xcodebuild test -project TwitchApp.xcodeproj -scheme "TwitchApp" -destination "name=iPhone X,OS=12.1"
-
-# - job: Coverage
-#   steps:
-#   - script: bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
-# steps:
-# - task: Xcode@5
-#   inputs:
-#     actions: 'build'
-#     scheme: ''
-#     sdk: 'iphoneos'
-#     configuration: 'Release'
-#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-#     xcodeVersion: '10' # Options: 8, 9, 10, default, specifyPath
-    
-# - script: bash <(curl -s https://codecov.io/bash) -t f1b873d7-af79-480a-afbc-5310cf4ba484
+  - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Report/slather/xml_report -F adder -F subtractor
+    displayName: 'Upload coverage to codecov.io'
