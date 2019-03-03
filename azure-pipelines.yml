@@ -31,6 +31,10 @@ steps:
 - script: gem install slather
   displayName: 'Install Slather'  
 
+#slather setup TwitchApp.xcodeproj
+- script: slather setup TwitchApp.xcodeproj
+  displayName: 'Setup Slather'  
+
 - task: Xcode@5
   displayName: 'Xcode debug build'
   inputs:
@@ -59,21 +63,8 @@ steps:
     signingOption: "auto"
     useXcpretty: true
 
-- script: set -o pipefail &&
-        xcodebuild \
-        -project TwitchApp.xcodeproj \
-        -scheme "TwitchApp" \
-        -sdk iphonesimulator \
-        -destination 'platform=iOS Simulator,name=iPhone 7' \
-        test \
-        | xcpretty \
-        -r "html" \
-        -o "Report/tests.html"
+- script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' -enableCodeCoverage YES clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
   displayName: 'Test'
-
-#slather setup TwitchApp.xcodeproj
-- script: slather setup TwitchApp.xcodeproj
-  displayName: 'Setup Slather'
 
 - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
   displayName: 'Run Slather'
