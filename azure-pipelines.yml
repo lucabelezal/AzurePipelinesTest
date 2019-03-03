@@ -66,11 +66,12 @@ steps:
 - script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' -enableCodeCoverage YES clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
   displayName: 'Test'
 
-- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN)
+#bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN)
+- script: bash <(curl https://codecov.io/bash) -t f1b873d7-af79-480a-afbc-5310cf4ba484
   displayName: 'Upload coverage to Codecov'    
 
-- script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
-  displayName: 'Run Slather'
+# - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
+#   displayName: 'Run Slather'
 
 # - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
 #   displayName: 'Run Slather scheme TwitchApp'
