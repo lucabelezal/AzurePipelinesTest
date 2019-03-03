@@ -9,6 +9,12 @@ trigger:
 - releases/*
 - features/*
 
+pr:
+- master
+- develop
+- releases/*
+- features/*
+
 pool:
   vmImage: 'macOS 10.13'
 
@@ -20,50 +26,52 @@ variables:
 steps:
 # - script: /usr/local/bin/carthage update --platform ios
 #   displayName: 'Carthage installation'
-- script: |
-    CALL gem install bundler
-    bundle install --retry=3 --jobs=4
-  displayName: 'bundle install'
+# - script: |
+#     CALL gem install bundler
+#     bundle install --retry=3 --jobs=4
+#   displayName: 'bundle install'
 
-- script: bundle
-  displayName: 'Execute Bundle'
+# - script: bundle
+#   displayName: 'Execute Bundle'
 
-- script: gem install slather
-  displayName: 'Install Slather'  
+# - script: gem install slather
+#   displayName: 'Install Slather'  
 
-#slather setup TwitchApp.xcodeproj
-- script: slather setup TwitchApp.xcodeproj
-  displayName: 'Setup Slather'  
+# - script: slather setup TwitchApp.xcodeproj
+#   displayName: 'Setup Slather'  
 
-- task: Xcode@5
-  displayName: 'Xcode debug build'
-  inputs:
-    actions: 'clean build'
-    scheme: '$(scheme)'
-    sdk: '$(sdk)'
-    configuration: '$(configuration)'
-    xcodeVersion: '10'
-    packageApp: false
-    xcWorkspacePath: 'TwitchApp.xcodeproj'
-    useXcpretty: true
+# - task: Xcode@5
+#   displayName: 'Xcode debug build'
+#   inputs:
+#     actions: 'clean build'
+#     scheme: '$(scheme)'
+#     sdk: '$(sdk)'
+#     configuration: '$(configuration)'
+#     xcodeVersion: '10'
+#     packageApp: false
+#     xcWorkspacePath: 'TwitchApp.xcodeproj'
+#     useXcpretty: true
 
-- task: Xcode@5
-  displayName: 'Running XCTest/XCUITest'
-  inputs:
-    actions: 'test'
-    scheme: '$(scheme)'
-    sdk: 'iphonesimulator'
-    configuration: '$(configuration)'
-    xcodeVersion: '10'
-    packageApp: false
-    xcWorkspacePath: 'TwitchApp.xcodeproj'
-    destinationSimulators: 'iPhone 7'
-    destinationTypeOption: 'simulators'
-    destinationPlatformOption: 'iOS'
-    signingOption: "auto"
-    useXcpretty: true
+# - task: Xcode@5
+#   displayName: 'Running XCTest/XCUITest'
+#   inputs:
+#     actions: 'test'
+#     scheme: '$(scheme)'
+#     sdk: 'iphonesimulator'
+#     configuration: '$(configuration)'
+#     xcodeVersion: '10'
+#     packageApp: false
+#     xcWorkspacePath: 'TwitchApp.xcodeproj'
+#     destinationSimulators: 'iPhone 7'
+#     destinationTypeOption: 'simulators'
+#     destinationPlatformOption: 'iOS'
+#     signingOption: "auto"
+#     useXcpretty: true
 
-- script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' -enableCodeCoverage YES clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -r "html" -o "Report/tests.html"
+- script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
+  displayName: 'Clean-Build'
+
+- script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' -enableCodeCoverage YES test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -r "html" -o "Report/tests.html"
   displayName: 'Test'
 
 - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN)
