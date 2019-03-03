@@ -31,6 +31,7 @@ steps:
     packageApp: false
     xcWorkspacePath: 'TwitchApp.xcodeproj'
     useXcpretty: true
+
 - task: Xcode@5
   displayName: 'Running XCTest' #/XCUITest
   inputs:
@@ -46,11 +47,20 @@ steps:
     destinationPlatformOption: 'iOS'
     signingOption: "auto"
     useXcpretty: true
-    publishJUnitResults: 'build/reports/junit.xml'
+    publishJUnitResults: 'build/reports/coverage.xml'
 
-# Upload coverage to codecov.io
-- script: bash <(curl -s https://codecov.io/bash) -t -t $(CODECOV_TOKEN)
-  displayName: Upload coverage to codecov.io    
+- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+  displayName: 'codecov' 
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'       
+
+# # Upload coverage to codecov.io
+# - script: bash <(curl -s https://codecov.io/bash) -t -t $(CODECOV_TOKEN)
+#   displayName: Upload coverage to codecov.io    
 
 # pool:
 #   vmImage: 'macOS-10.13'
