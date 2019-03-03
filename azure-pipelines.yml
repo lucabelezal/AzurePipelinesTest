@@ -26,17 +26,21 @@ variables:
 jobs:
 - job: Setup
   steps:
+  - task:
+    displayName: 'Install bundler'
   - script: gem install bundler
-  displayName: 'Install bundler'
 
+  - task:
+    displayName: 'Bundle Install'
   - script: bundle install
-  displayName: 'Bundle Install'
 
+  - task:
   - script: bundle
     displayName: 'Execute Bundle'
 
-  - script: gem install slather
+  - task:
     displayName: 'Install Slather'  
+  - script: gem install slather
 
 - job: Clean-Build
   dependsOn: Setup
@@ -83,8 +87,10 @@ jobs:
   - Test
   condition: succeeded('Test')
   steps:
-  - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
-  displayName: 'Run Slather'
-
-  - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Report/slather/xml_report -F adder -F subtractor
-    displayName: 'Upload coverage to codecov.io'
+    - task:
+      displayName: 'Run Slather'
+    - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
+    - task:
+      displayName: 'Upload coverage to codecov.io'
+    - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Report/slather/xml_report -F adder -F subtractor
+    
