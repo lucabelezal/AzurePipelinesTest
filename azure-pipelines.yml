@@ -11,7 +11,7 @@ trigger:
 - features/*
 
 pool:
-  vmImage: 'macOS-10.14.3'
+  vmImage: 'macOS-10.14'
 
 steps:
 - task: Xcode@5
