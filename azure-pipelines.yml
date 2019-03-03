@@ -16,10 +16,21 @@ variables:
   scheme: 'TwitchApp'
   sdk: 'iphoneos'
   configuration: 'Debug'
-  
+       
 steps:
 # - script: /usr/local/bin/carthage update --platform ios
 #   displayName: 'Carthage installation'
+- script: gem install rails && rails -v
+  displayName: 'gem install rails'
+
+- script: |
+    CALL gem install bundler
+    bundle install --retry=3 --jobs=4
+  displayName: 'bundle install'
+
+- script: bundle exec rake
+  displayName: 'bundle exec rake'   
+  
 - task: Xcode@5
   displayName: 'Xcode debug build'
   inputs:
@@ -48,13 +59,27 @@ steps:
     signingOption: "auto"
     useXcpretty: true
     testResultsFiles: 'build/reports/coverage.xml'
-       
-- script: bash bundle
-- script: bash gem install slather
-- script: slather
-- script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
+
 - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
-  displayName: 'codecov' 
+  displayName: 'Upload coverage to codecov.io'   
+       
+# - bash: bundle install
+#   displayName: 'Install Bundle'
+
+# - script: bundle
+#   displayName: 'Execute Bundle'
+
+# - script: gem install slather
+#   displayName: 'Install Slather'
+
+# - script: slather
+#   displayName: 'Run Slather'
+
+# - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
+#   displayName: 'Run Slather scheme TwitchApp'
+
+# - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+#   displayName: 'Upload coverage to codecov.io' 
 
 # - task: CmdLine@2
 #   inputs:
