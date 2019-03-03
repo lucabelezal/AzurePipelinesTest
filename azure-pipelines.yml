@@ -59,11 +59,15 @@ steps:
     signingOption: "auto"
     useXcpretty: true
 
+#slather setup TwitchApp.xcodeproj
+- script: slather setup TwitchApp.xcodeproj
+  displayName: 'Setup Slather'
+
 - script: slather coverage -x --output-directory Report/slather/xml_report --scheme TwitchApp  TwitchApp.xcodeproj
   displayName: 'Run Slather'
 
 - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f Report/slather/xml_report -F adder -F subtractor
-  displayName: 'Upload coverage to codecov.io'   
+  displayName: 'Upload coverage to Codecov'   
 
 # - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
 #   displayName: 'Run Slather scheme TwitchApp'
