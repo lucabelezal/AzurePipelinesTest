@@ -49,23 +49,23 @@ steps:
     useXcpretty: true
     testResultsFiles: 'build/reports/coverage.xml'
        
-- script: bundle install
+- bash: bundle install
   displayName: 'Install Bundle'
 
-- script: bundle
-  displayName: 'Execute Bundle'
+# - script: bundle
+#   displayName: 'Execute Bundle'
 
-- script: gem install slather
-  displayName: 'Install Slather'
+# - script: gem install slather
+#   displayName: 'Install Slather'
 
-- script: slather
-  displayName: 'Run Slather'
+# - script: slather
+#   displayName: 'Run Slather'
 
-- script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
-  displayName: 'Run Slather scheme TwitchApp'
+# - script: slather coverage -s --scheme TwitchApp TwitchApp.xcodeproj
+#   displayName: 'Run Slather scheme TwitchApp'
 
-- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
-  displayName: 'Upload coverage to codecov.io' 
+# - script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+#   displayName: 'Upload coverage to codecov.io' 
 
 # - task: CmdLine@2
 #   inputs:
