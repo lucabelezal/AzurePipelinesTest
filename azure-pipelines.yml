@@ -26,10 +26,11 @@ variables:
 jobs:
 - job: Setup
   steps:
-  - script: |
-    CALL gem install bundler
-    bundle install --retry=3 --jobs=4
-  displayName: 'bundle install'
+  - script: gem install bundler
+  displayName: 'Install bundler'
+
+  - script: bundle install
+  displayName: 'Bundle Install'
 
   - script: bundle
     displayName: 'Execute Bundle'
