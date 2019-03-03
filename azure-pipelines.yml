@@ -16,10 +16,26 @@ variables:
   scheme: 'TwitchApp'
   sdk: 'iphoneos'
   configuration: 'Debug'
-  
+       
 steps:
 # - script: /usr/local/bin/carthage update --platform ios
 #   displayName: 'Carthage installation'
+- task: UseRubyVersion@0
+  inputs:
+    versionSpec: '>= 2.4'
+    addToPath: true
+
+- script: gem install rails && rails -v
+  displayName: 'gem install rails'
+
+- script: |
+    CALL gem install bundler
+    bundle install --retry=3 --jobs=4
+  displayName: 'bundle install'
+
+- script: bundle exec rake
+  displayName: 'bundle exec rake'   
+  
 - task: Xcode@5
   displayName: 'Xcode debug build'
   inputs:
@@ -48,9 +64,12 @@ steps:
     signingOption: "auto"
     useXcpretty: true
     testResultsFiles: 'build/reports/coverage.xml'
+
+- script: bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f build/reports/coverage.xml -F adder -F subtractor
+  displayName: 'Upload coverage to codecov.io'   
        
-- bash: bundle install
-  displayName: 'Install Bundle'
+# - bash: bundle install
+#   displayName: 'Install Bundle'
 
 # - script: bundle
 #   displayName: 'Execute Bundle'
