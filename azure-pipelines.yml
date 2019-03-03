@@ -18,8 +18,8 @@ variables:
   configuration: 'Debug'
 
 steps:
-- script: /usr/local/bin/carthage update --platform ios
-  displayName: 'Carthage installation'
+# - script: /usr/local/bin/carthage update --platform ios
+#   displayName: 'Carthage installation'
 - task: Xcode@5
   displayName: 'Running XCTest/XCUITest'
   inputs:
