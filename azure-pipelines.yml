@@ -49,13 +49,13 @@ steps:
     useXcpretty: true
     testResultsFiles: 'build/reports/coverage.xml'
        
-- script: bash bundle install
+- script: bundle install
   displayName: 'Install Bundle'
 
-- script: bash bundle
+- script: bundle
   displayName: 'Execute Bundle'
 
-- script: bash gem install slather
+- script: gem install slather
   displayName: 'Install Slather'
 
 - script: slather
