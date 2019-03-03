@@ -68,7 +68,7 @@ steps:
     signingOption: "auto"
     useXcpretty: true
     
-  - script: bash <(curl https://codecov.io/bash) -t f1b873d7-af79-480a-afbc-5310cf4ba484
+- script: bash <(curl https://codecov.io/bash) -t f1b873d7-af79-480a-afbc-5310cf4ba484
   displayName: 'Upload coverage to Codecov' 
 
 # - script: xcodebuild -project TwitchApp.xcodeproj -scheme TwitchApp -derivedDataPath Build/ -destination 'platform=iOS Simulator,name=iPhone 7' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
