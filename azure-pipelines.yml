@@ -59,6 +59,18 @@ steps:
     signingOption: "auto"
     useXcpretty: true
 
+- script: set -o pipefail &&
+        xcodebuild \
+        -project TwitchApp.xcodeproj \
+        -scheme "TwitchApp" \
+        -sdk iphonesimulator \
+        -destination 'platform=iOS Simulator,name=iPhone 7' \
+        test \
+        | xcpretty \
+        -r "html" \
+        -o "Report/tests.html"
+  displayName: 'Test'
+
 #slather setup TwitchApp.xcodeproj
 - script: slather setup TwitchApp.xcodeproj
   displayName: 'Setup Slather'
