@@ -48,6 +48,10 @@ steps:
     useXcpretty: true
     publishJUnitResults: 'build/reports/junit.xml'
 
+# Upload coverage to codecov.io
+- script: bash <(curl -s https://codecov.io/bash) -t -t $(CODECOV_TOKEN)
+  displayName: Upload coverage to codecov.io    
+
 # pool:
 #   vmImage: 'macOS-10.13'
 
